@@ -35,6 +35,8 @@ from audio decoding to the neural network, runs **on the device**.
   plays show the chords ahead of time. No audio is ever downloaded.
 - **Key, capo, speed** — transpose or add a capo and chords follow; slow down without changing pitch.
 - **Editor** — fix any chord; corrections stay on the phone.
+- **Guitar tuner** — YIN pitch detection accurate to a few cents on a phone mic, reference tones,
+  standard tuning free and alternative tunings (drop D, DADGAD, open G…) in Pro.
 - **A-B loop**, **share** (WhatsApp, email, file), **light/dark**, **es / en / pt**.
 
 <p align="center">
@@ -95,7 +97,15 @@ noise/reverb augmentation for microphone input.
 | Model | Held-out GuitarSet (maj/min) | Size |
 |---|---|---|
 | v1 | 0.217 | — |
-| **v2 CRNN, INT8** | **0.594** (0.794 on comparable classes) | 1.5 MB |
+| v2 CRNN, INT8 | 0.594 (0.794 on comparable classes) | 1.5 MB |
+| **v3** (v2 fine-tuned for phone mics) | **0.594**, and 3.7–5× better on quiet phone audio | 1.5 MB |
+
+### Making a phone microphone usable
+
+A phone's raw microphone delivered a guitar about 35 dB below anything the model had seen in
+training. An automatic gain stage (capped at +40 dB so room noise isn't amplified), a high-pass
+filter and a spectral noise gate took simulated phone takes from **15.9% to 96.7%** maj/min
+accuracy; v3 adds robustness for audio that skips that stage.
 
 ## Selected excerpts
 
@@ -154,7 +164,6 @@ names at once. Typography and colour are tuned to be readable at ~1 m on a music
 
 - Google Play closed testing → production
 - iOS build (Core ML / ONNX, AVAudioEngine)
-- Guitar tuner
 - Smaller binary with a reduced ONNX Runtime build
 
 ---
